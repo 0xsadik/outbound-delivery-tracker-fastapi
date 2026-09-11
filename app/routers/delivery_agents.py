@@ -6,22 +6,27 @@ from app import models, schemas
 
 router = APIRouter(prefix="/api/delivery-agents", tags=["delivery-agents"])
 
+
 @router.post("", response_model=schemas.AgentOut, status_code=201)
 def create_agent(payload: schemas.AgentCreate, db: Session = Depends(get_db)):
     agent = models.DeliveryAgent(**payload.model_dump())
     db.add(agent)
     db.commit()
     db.refresh(agent)
-    return agent 
+    return agent
 
 
 @router.get("", response_model=list[schemas.AgentOut])
+def list_agents(db: Session = Depends(get_db)):
+    return db.query(models.DeliveryAgent).all()
+
+
+@router.get("/{agent_id}", response_model=schemas.AgentOut)
 def get_agent(agent_id: int, db: Session = Depends(get_db)):
     agent = db.get(models.DeliveryAgent, agent_id)
     if not agent:
         raise HTTPException(status_code=404, detail="Agent not found")
-    return agent 
-
+    return agent
 
 
 @router.put("/{agent_id}", response_model=schemas.AgentOut)
@@ -36,7 +41,6 @@ def update_agent(agent_id: int, payload: schemas.AgentUpdate, db: Session = Depe
     return agent
 
 
-
 @router.delete("/{agent_id}", status_code=204)
 def delete_agent(agent_id: int, db: Session = Depends(get_db)):
     agent = db.get(models.DeliveryAgent, agent_id)
@@ -49,14 +53,10 @@ def delete_agent(agent_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(
             status_code=400,
-            detail="Cannot delete an agent that has existing deliveries - mark them inactive insted!",
+            detail="Cannot delete an agent that has existing deliveries — mark them inactive instead",
         )
-
 
 
 @router.get("/{agent_id}/deliveries", response_model=list[schemas.DeliveryWithOrderOut])
 def get_deliveries_for_agent(agent_id: int, db: Session = Depends(get_db)):
-    return db.query(models.Delivery).filter(models.Delivery.agent_id).all()
-
-
-
+    return db.query(models.Delivery).filter(models.Delivery.agent_id == agent_id).all()
