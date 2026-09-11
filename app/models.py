@@ -10,15 +10,15 @@ def utcnow():
 
 
 class Product(Base):
-    __tablename__= "products"
+    __tablename__ = "products"
+
     id = Column(Integer, primary_key=True, index=True)
     sku = Column(String, unique=True, nullable=False, index=True)
     name = Column(String, nullable=False)
     quantity_in_stock = Column(Integer, default=0, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
     order_items = relationship("OrderItem", back_populates="product")
-
-
-
 
 
 
@@ -100,7 +100,6 @@ class Delivery(Base):
 
 
 class StatusHistory(Base):
-    """Generic audit trail used by every status change across the domain."""
     __tablename__ = "status_history"
 
     id = Column(Integer, primary_key=True, index=True)
