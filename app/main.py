@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, engine
 
-from app.routers import products, customers, delivery_orders
+from app.routers import products, customers, delivery_agents, delivery_orders
 
 
 app = FastAPI(title="Outbound delivery Tracker API")
@@ -28,5 +28,5 @@ def health():
 
 app.include_router(products.router)
 app.include_router(customers.router)
-
+app.include_router(delivery_agents.router)
 app.include_router(delivery_orders.router)
