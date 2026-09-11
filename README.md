@@ -74,3 +74,6 @@ uvicorn app.main:app --reload --port 8000
 
 ```
 
+### Front-end 
+
+➡️ [here](https://github.com/0xsadik/outbound-delivery-tracker-client) 
